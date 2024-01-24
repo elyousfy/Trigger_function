@@ -28,26 +28,23 @@ def detection_Live_stream(result,frame):
         cv2.imshow('Webcam', frame)
        
      
-def detect_face(source,model,delay_s=0):
+def detect_face(cam_source,YOLO_model,delay_s=0):
+    
     time.sleep(delay_s)
-    ret,frame=source.read()
+    ret,frame=cam_source.read()
         
     if ret:
-        results=model(frame)
+        results=YOLO_model(frame)
         
-    return results,frame
+    return results
             
  
         
-def detect_and_show_images(face_counter_local,results,show=True,save=True):
-   
-    # Save the image if a new face has entered the frame
-     
-    for result in results:
+def detect_and_show_images(face_counter_local,result,show=True,save=True):
         
         curr_faces = len(result) # get the current number of faces
         if curr_faces > face_counter_local: # compare with the previous number of faces
-        
+            
         
             if show==True:
                 im_array = result.plot()  # plot a BGR numpy array of predictions
@@ -60,8 +57,9 @@ def detect_and_show_images(face_counter_local,results,show=True,save=True):
                 # Save the image to the file
                 im.save(filename)
                 print(f"Saved image to {filename}")
-    face_counter_local=curr_faces
-    return face_counter_local
+                
+        face_counter_local=curr_faces
+        return face_counter_local
     
     
 
