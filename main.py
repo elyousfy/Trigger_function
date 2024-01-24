@@ -15,30 +15,26 @@ if __name__=="__main__":
     cam=cv2.VideoCapture(0) #change the 0 depending on source of video stream
    
     while True:
-        ret,frame=cam.read()
         
+        results=detect_face(cam,model)
         
-        if ret:
-            results=model(frame)
-            
-            for result in results:
+        for result in results:
                 
                 # to display a video stream with real time detection uncomment this, and comment detect_and_show_images:
                 #detection_Live_stream(result,frame)
                 
                 #this function continuously monitors the web cam
-                
+                detect_and_show_images(face_counter_global,result,show=False,save=False)
+        
                 curr_faces = len(result)
                 if curr_faces > face_counter_global:
-                    time.sleep(0.5)
-                    ret, frame = cam.read()
-                    if ret:
-                        results = model(frame)
+                
+                        results=detect_face(cam,model,delay_s=0.5)
                         try:
                             result = results[0]
                         except:
                             pass
-                    face_counter_global=detect_and_show_images(face_counter_global,result,delay_ms=500)
+                face_counter_global=detect_and_show_images(face_counter_global,result)
 
         
     # If the input is the q key, exit the loop
