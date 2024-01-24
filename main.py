@@ -1,7 +1,7 @@
-
 from ultralytics import YOLO
 import cv2
 from utils import *
+
 
 global face_counter_global
 
@@ -23,18 +23,24 @@ if __name__=="__main__":
                 # to display a video stream with real time detection uncomment this, and comment detect_and_show_images:
                 #detection_Live_stream(result,frame)
                 
-                #this function continuously monitors the web cam
-                detect_and_show_images(face_counter_global,result,show=False,save=False)
+                #this function continuously monitors the webcam
+                trigger_function(face_counter_global,result,show=False,save=False)
         
-                curr_faces = len(result)
-                if curr_faces > face_counter_global:
                 
-                        results=detect_face(cam,model,delay_s=0.5)
+                curr_faces = len(result)
+                if curr_faces > face_counter_global: #if number of faces increases, enter the next part
+                
+                        results=detect_face(cam,model,delay_s=0.5) #invoke YOLO to detect new face 
                         try:
                             result = results[0]
+                            
+                            
                         except:
                             pass
-                face_counter_global=detect_and_show_images(face_counter_global,result)
+                        
+                 #update the number of faces in counter
+                face_counter_global=trigger_function(face_counter_global,result)
+                
 
         
     # If the input is the q key, exit the loop

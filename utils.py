@@ -2,7 +2,10 @@ import cv2
 from ultralytics import YOLO
 from PIL import Image
 import time
-
+import io
+import boto3
+import requests
+rekognition = boto3.client('rekognition', region_name='us-east-1')
 
 def detection_Live_stream(result,frame):
 
@@ -40,7 +43,7 @@ def detect_face(cam_source,YOLO_model,delay_s=0):
             
  
         
-def detect_and_show_images(face_counter_local,result,show=True,save=True):
+def trigger_function(face_counter_local,result,show=True,save=True):
         
         curr_faces = len(result) # get the current number of faces
         if curr_faces > face_counter_local: # compare with the previous number of faces
@@ -57,8 +60,33 @@ def detect_and_show_images(face_counter_local,result,show=True,save=True):
                 # Save the image to the file
                 im.save(filename)
                 print(f"Saved image to {filename}")
-                
+        
+         # Process the image obtained within the function
+        stream = io.BytesIO()
+        im.save(stream, format="JPEG")
+        image_binary = stream.getvalue()
+
+        #send the processed data to rekognition
+        response = rekognition.search_faces_by_image(
+            CollectionId='Ramzy',
+            Image={'Bytes': image_binary}
+        )
+        
+        # please use the response to compare between ID in database, and produced ID
+        # if possible, we want to send the picture to the frontend to be viewed (the one detected)
+        for match in response['FaceMatches']:
+            print (match['Face']['FaceId'],match['Face']['Confidence'])
+            
+            requests.post(
+                url="",
+                headers={
+                    "authorization":f"token"
+                },
+                data={"FaceID":match['FaceId']},        
+            )
+        
         face_counter_local=curr_faces
+        
         return face_counter_local
     
     
